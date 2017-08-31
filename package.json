@@ -1,0 +1,74 @@
+{
+  "name": "@hipshot/react-simple-graphql",
+  "version": "1.0.0",
+  "description": "A simple GraphQL client for React",
+  "main": "lib/cjs/index.js",
+  "module": "lib/es/index.js",
+  "scripts": {
+    "build": "npm-run-all -p build:*",
+    "build:cjs": "cross-env  BABEL_ENV=cjs babel src --out-dir lib/cjs",
+    "build:es": "cross-env BABEL_ENV=production babel src --out-dir lib/es",
+    "clean": "rimraf lib",
+    "precommit": "lint-staged",
+    "test": "jest --notify",
+    "test:watch": "jest --notify --watch",
+    "storybook": "cross-env BABEL_ENV=test start-storybook -p 9003",
+    "build-storybook": "cross-env BABEL_ENV=test build-storybook"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.json": [
+      "prettier --parser json --write",
+      "git add"
+    ],
+    "*.css": [
+      "prettier --parser postcss --write",
+      "git add"
+    ],
+    "*.graphql": [
+      "prettier --parser graphql --write",
+      "git add"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@storybook/addon-actions": "^3.2.6",
+    "@storybook/addon-links": "^3.2.6",
+    "@storybook/react": "^3.2.8",
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^7.2.3",
+    "babel-jest": "^20.0.3",
+    "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
+    "babel-preset-babili": "^0.1.4",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-react-app": "^3.0.2",
+    "cross-env": "^5.0.5",
+    "dotenv": "^4.0.0",
+    "env-cmd": "^5.1.0",
+    "eslint": "^4.5.0",
+    "eslint-config-react-app": "^2.0.0",
+    "eslint-plugin-flowtype": "^2.35.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-prettier": "^2.2.0",
+    "eslint-plugin-react": "^7.3.0",
+    "husky": "^0.14.3",
+    "jest": "^20.0.4",
+    "lint-staged": "^4.0.4",
+    "npm-run-all": "^4.1.1",
+    "prettier": "^1.6.1",
+    "rimraf": "^2.6.1"
+  },
+  "dependencies": {
+    "apollo-fetch": "^0.6.0",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "styled-components": "^2.1.2"
+  }
+}
