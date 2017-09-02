@@ -1,6 +1,6 @@
 {
   "name": "@hipshot/react-simple-graphql",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple GraphQL client for React",
   "main": "lib/cjs/index.js",
   "module": "lib/es/index.js",
@@ -13,7 +13,8 @@
     "test": "jest --notify",
     "test:watch": "jest --notify --watch",
     "storybook": "cross-env BABEL_ENV=test start-storybook -p 9003",
-    "build-storybook": "cross-env BABEL_ENV=test build-storybook"
+    "build-storybook": "cross-env BABEL_ENV=test build-storybook",
+    "prepublishOnly": "npm run build"
   },
   "lint-staged": {
     "*.js": [
@@ -48,6 +49,7 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-react-app": "^3.0.2",
+    "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^5.0.5",
     "dotenv": "^4.0.0",
     "env-cmd": "^5.1.0",
