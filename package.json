@@ -1,6 +1,6 @@
 {
   "name": "@hipshot/react-simple-graphql",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A simple GraphQL client for React",
   "main": "lib/cjs/index.js",
   "module": "lib/es/index.js",
@@ -17,22 +17,10 @@
     "prepublishOnly": "npm run build"
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --write",
-      "git add"
-    ],
-    "*.json": [
-      "prettier --parser json --write",
-      "git add"
-    ],
-    "*.css": [
-      "prettier --parser postcss --write",
-      "git add"
-    ],
-    "*.graphql": [
-      "prettier --parser graphql --write",
-      "git add"
-    ]
+    "*.js": ["prettier --write", "git add"],
+    "*.json": ["prettier --parser json --write", "git add"],
+    "*.css": ["prettier --parser postcss --write", "git add"],
+    "*.graphql": ["prettier --parser graphql --write", "git add"]
   },
   "keywords": [],
   "author": "",

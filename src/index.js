@@ -17,23 +17,21 @@ export class Query extends React.Component {
     if (
       nextProps.uri !== uri ||
       nextProps.query !== query ||
-      nextProps.variables !== variables
+      JSON.stringify(nextProps.variables) !== JSON.stringify(variables)
     ) {
       this.doFetch(nextProps);
     }
   }
 
   doFetch({ uri, query, variables }) {
-    this.setState(state => ({ loading: true, data: false, errors: false }));
+    this.setState(state => ({ loading: true, data: null, errors: null }));
     const apolloFetch = createApolloFetch({ uri });
 
     apolloFetch({ query, variables })
       .then(({ data, errors }) => {
-        console.log("success");
         this.setState(state => ({ loading: false, data, errors }));
       })
       .catch(errors => {
-        console.log("errors");
         this.setState(state => ({
           loading: false,
           data: false,
