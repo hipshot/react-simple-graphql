@@ -87,8 +87,6 @@ mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
 To make the `uri` prop optional on `<Query/>` and `<Mutation/>`, use  `<Provider/>`. Any `<Query/>` or `<Mutation/>` component that's a descendent of `<Provider/>` will receive the URI via context.
 
 ```
-const uri = ;
-
 <Provider uri="https//example.org/graphql">
   <div>
     <Query query={query}>
@@ -100,7 +98,7 @@ const uri = ;
 </Provider>
 ```
 
-A `uri` prop on the `<Query/>` or `<Mutation/>` always take precendence over one provided by `<Provider/>`.
+A `uri` prop on the `<Query/>` or `<Mutation/>` will always take precendence over the `uri` provided by `<Provider/>`.
 
 
 ## `withUri` HoC
@@ -110,6 +108,11 @@ Another way to make the `uri` prop optional on `<Query/>` and `<Mutatation/>` is
 Eg:
 
 ```
-import {Query} from '@hipshot/react-simple-graphql';
-export default Query.withUri(uri);
+// my-gql-client.js
+import {Query as Q, Mutation as M} from '@hipshot/react-simple-graphql';
+
+const uri = "https//example.org/graphql";
+
+export const Query = Q.withUri(uri);
+export const Mutation = M.withMutation(uri);
 ```
