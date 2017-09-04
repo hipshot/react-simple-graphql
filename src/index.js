@@ -1,25 +1,40 @@
 import React from "react";
 import { createApolloFetch } from "apollo-fetch";
+import PropTypes from "prop-types";
 
-const withUri = (uri, Component) => props => <Component uri={uri} {...props} />;
+const contextTypes = {
+  uri: PropTypes.string
+};
 
 export class Query extends React.Component {
-  static withUri = uri => withUri(uri, Query);
+  static withUri = uri => props => <Query uri={uri} {...props} />;
+
+  static contextTypes = contextTypes;
 
   state = { loading: false, data: null, errors: null };
 
+  getUri() {
+    // destructing context doesn't work /shug
+    return this.props.uri || this.context.uri;
+  }
+
   componentDidMount() {
-    this.doFetch(this.props);
+    const uri = this.getUri();
+
+    this.doFetch({ ...this.props, uri });
   }
 
   componentWillReceiveProps(nextProps) {
-    const { uri, query, variables } = this.props;
+    const { query, variables } = this.props;
+    const uri = this.getUri();
+    const nextUri = nextProps.uri;
+
     if (
-      nextProps.uri !== uri ||
+      nextUri !== uri ||
       nextProps.query !== query ||
       JSON.stringify(nextProps.variables) !== JSON.stringify(variables)
     ) {
-      this.doFetch(nextProps);
+      this.doFetch({ ...nextProps, uri });
     }
   }
 
@@ -49,14 +64,23 @@ export class Query extends React.Component {
 }
 
 export class Mutation extends React.Component {
-  static withUri = uri => withUri(uri, Mutation);
+  static withUri = uri => props => <Mutation uri={uri} {...props} />;
+
+  static contextTypes = contextTypes;
 
   state = { loading: false, data: null, errors: null };
 
+  getUri() {
+    // destructing context doesn't work /shug
+    return this.props.uri || this.context.uri;
+  }
+
   doFetch = query => variables => {
-    const { uri } = this.props;
     this.setState(state => ({ loading: true, data: false, errors: false }));
+
+    const uri = this.getUri();
     const apolloFetch = createApolloFetch({ uri });
+
     apolloFetch({ query, variables })
       .then(({ data, errors }) => {
         this.setState(state => ({ loading: false, data, errors }));
@@ -80,5 +104,17 @@ export class Mutation extends React.Component {
       errors,
       mutation: this.doFetch(mutation)
     });
+  }
+}
+
+export class Provider extends React.Component {
+  static childContextTypes = contextTypes;
+
+  getChildContext() {
+    return { uri: this.props.uri };
+  }
+
+  render() {
+    return <div>{this.props.children}</div>;
   }
 }

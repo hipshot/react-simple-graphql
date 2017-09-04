@@ -1,11 +1,12 @@
 import React from "react";
 
 import { storiesOf } from "@storybook/react";
-import { Query, Mutation } from "../index";
+import { Query, Mutation, Provider } from "../index";
 
 const uri = `http://localhost:8081/v1/graphql`;
 
 const MyQuery = Query.withUri(uri);
+const MyMutation = Mutation.withUri(uri);
 
 const query1 = `
 {
@@ -46,7 +47,19 @@ storiesOf("GraqhQL", module)
       {({ data }) => data && <pre>{JSON.stringify(data, null, 2)}</pre>}
     </MyQuery>
   ))
+  .add("query (using <Provider>", () => (
+    <Provider uri={uri}>
+      <Query query={query1}>
+        {({ data }) => data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+      </Query>
+    </Provider>
+  ))
   .add("query with variables", () => <Demo1 uri={uri} />)
+  .add("query with variables and <Provider>", () => (
+    <Provider uri={uri}>
+      <Demo1 />
+    </Provider>
+  ))
   .add("query with error", () => (
     <Query query={badQuery} uri={uri}>
       {({ data, errors }) =>
@@ -81,6 +94,58 @@ storiesOf("GraqhQL", module)
           </button>
         )}
     </Mutation>
+  ))
+  .add("mutation with <Provider/>", () => (
+    <Provider uri={uri}>
+      <Mutation mutation={mutation}>
+        {({ mutation, data, errors }) =>
+          errors ? (
+            <pre>{JSON.stringify(errors, null, 2)}</pre>
+          ) : data ? (
+            <pre>{JSON.stringify(data, null, 2)}</pre>
+          ) : (
+            <button
+              onClick={() =>
+                mutation({
+                  input: {
+                    type: "WORKORDER",
+                    vpCode: "M",
+                    drill: 1234,
+                    timeCard: "123",
+                    hours: 22
+                  }
+                })}
+            >
+              click to run mutation
+            </button>
+          )}
+      </Mutation>
+    </Provider>
+  ))
+  .add("mutation using withUri", () => (
+    <MyMutation mutation={mutation}>
+      {({ mutation, data, errors }) =>
+        errors ? (
+          <pre>{JSON.stringify(errors, null, 2)}</pre>
+        ) : data ? (
+          <pre>{JSON.stringify(data, null, 2)}</pre>
+        ) : (
+          <button
+            onClick={() =>
+              mutation({
+                input: {
+                  type: "WORKORDER",
+                  vpCode: "M",
+                  drill: 1234,
+                  timeCard: "123",
+                  hours: 22
+                }
+              })}
+          >
+            click to run mutation
+          </button>
+        )}
+    </MyMutation>
   ))
   .add("mutation with error", () => (
     <Mutation mutation={mutation} uri={uri}>
@@ -137,35 +202,3 @@ class Demo1 extends React.Component {
     );
   }
 }
-
-// const query = `{
-//   phaseTypes{
-//     phaseType
-//     sequence
-//     isDrilling
-//   }
-// }`;
-
-// <Query query={query}>
-//   {({data}) => (
-//     data && <div>{data.sequence}</div>
-//   )}
-// </Query>
-
-// <Query
-// query={}
-// render={({ data }) => (
-//   data && <span>{JSON.stringify(data, null, 2)}</span>
-
-// )
-// />
-
-// <Query mutation={mutation}>
-//   {({mutationName, results}) => (
-//     <div>
-//       {results && (<redirect to="/" />)}
-//       <Button onClick={mutationName} value="save" />
-//     </div>
-
-//   )}
-// </Query>
