@@ -27,10 +27,7 @@ export class Query extends React.Component {
   componentWillReceiveProps(nextProps) {
     const { query, variables } = this.props;
     const uri = this.getUri();
-    const nextUri = nextProps.uri;
-
     if (
-      nextUri !== uri ||
       nextProps.query !== query ||
       JSON.stringify(nextProps.variables) !== JSON.stringify(variables)
     ) {
