@@ -3,27 +3,27 @@
 Simple GraphQL client for React.
 
 ```
-import {Query, Mutation} from '@hipshot/react-simple-graphql';
+import Query from '@hipshot/react-simple-graphql/Query';
 
-<Query query={query} uri={uri}>
+<Query uri={uri} query={query} variables={variables}>
   {({ data }) => data && <pre>{JSON.stringify(data, null, 2)}</pre>}
 </Query>
-
-<Mutation mutation={mutation} uri={uri}>
-  {({ mutation, data, errors }) =>
-    errors || data
-      ? (
-        <pre>{JSON.stringify(errors || data, null, 2)}</pre>
-      ) : (
-        <button onClick={(e) => mutation()}>click to run mutation</button>
-      )}
-</Mutation>
 ```
 
-
-## `<Query/>`
+## Install
 
 ```
+npm i @hipshot/react-simple-graphql
+```
+
+## Components
+
+
+### `Query` Component
+
+
+```
+import Query from '@hipshot/react-simple-graphql/Query';
 const uri = "https//example.org/graphql";
 
 const query = `
@@ -33,19 +33,41 @@ const query = `
     }
   }
 `;
+```
 
-<Query query={query} uri={uri}>
+Calling with the function-as-child pattern:
+
+```
+<Query uri={uri} query={query} variables={variables} onData={fn} onError={fn}>
   {({ loading, data, errors }) => {
     //
   }}
 </Query>
 ```
 
-## `<Mutation/>`
+Calling with render callbacks `render` and `renderLoading`.
+
+```
+<Query
+  uri={uri}
+  query={query}
+  variables={variables}
+  onData={fn}
+  onError={fn}
+  renderLoading={ () => <Loading />}
+  render={ ({data, errors}) => <SomethingOnceQueryCompletes /> }
+/>
+```
+
+---
+
+### `Mutation` Component
 
 Example:
 
 ```
+import Mutation from '@hipshot/react-simple-graphql/Mutation';
+
 const uri = "https//example.org/graphql";
 const mutation = `
 mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
@@ -55,7 +77,7 @@ mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
   }
 }`;
 
-<Mutation mutation={mutation} uri={uri}>
+<Mutation uri={uri} mutation={mutation} >
   {({ mutation, data, errors }) =>
     errors ? (
       // mutation ran unsuccessfully,
@@ -82,14 +104,18 @@ mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
 </Mutation>
 ```
 
-## `<Provider/>`
+---
+
+### `Provider` Component
 
 To make the `uri` prop optional on `<Query/>` and `<Mutation/>`, use  `<Provider/>`. Any `<Query/>` or `<Mutation/>` component that's a descendent of `<Provider/>` will receive the URI via context.
 
 ```
+import Provider from '@hipshot/react-simple-graphql/Provider';
+
 <Provider uri="https//example.org/graphql">
   <div>
-    <Query query={query}>
+    <Query query={query} variables={variables}>
     {({data})=> (
       // do stuff with data
     )}
@@ -101,9 +127,10 @@ To make the `uri` prop optional on `<Query/>` and `<Mutation/>`, use  `<Provider
 A `uri` prop on the `<Query/>` or `<Mutation/>` will always take precendence over the `uri` provided by `<Provider/>`.
 
 
+
 ## `withUri` HoC
 
-Another way to make the `uri` prop optional on `<Query/>` and `<Mutatation/>` is with a static method provided on both components called `withUri`:
+Another way to make the `uri` prop optional on `<Query/>` and `<Mutatation/>` is with a static method provided on both Query and Mutation called `withUri`:
 
 Eg:
 

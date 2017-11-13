@@ -1,6 +1,8 @@
 import React from "react";
 
 import { storiesOf } from "@storybook/react";
+import { action } from "@storybook/addon-actions";
+
 import { Query, Mutation, Provider } from "../index";
 
 const uri = `http://localhost:8081/v1/graphql`;
@@ -38,9 +40,22 @@ mutation CreateWorkActivity($input:WorkActivityCreateInput) {
 
 storiesOf("GraqhQL", module)
   .add("query", () => (
-    <Query query={query1} uri={uri}>
+    <Query query={query1} uri={uri} onData={action("onData")}>
       {({ data }) => data && <pre>{JSON.stringify(data, null, 2)}</pre>}
     </Query>
+  ))
+  .add("query (with error)", () => (
+    <Query query={`doh`} uri={uri} onError={action("onError")}>
+      {({ data }) => data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+    </Query>
+  ))
+  .add("query (with render cb)", () => (
+    <Query
+      query={query1}
+      uri={uri}
+      onData={action("onData")}
+      render={({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>}
+    />
   ))
   .add("query (withUri HoC)", () => (
     <MyQuery query={query1}>
