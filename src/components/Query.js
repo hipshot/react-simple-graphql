@@ -12,7 +12,7 @@ const defaultProps = {
   onError: x => null
 };
 
-export class Query extends React.Component {
+export default class Query extends React.Component {
   static withUri = uri => props => <Query uri={uri} {...props} />;
 
   static contextTypes = contextTypes;

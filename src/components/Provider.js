@@ -5,7 +5,7 @@ const contextTypes = {
   uri: PropTypes.string
 };
 
-export class Provider extends React.Component {
+export default class Provider extends React.Component {
   static childContextTypes = contextTypes;
 
   getChildContext() {

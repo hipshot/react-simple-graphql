@@ -11,7 +11,7 @@ const defaultProps = {
   onError: x => null
 };
 
-export class Mutation extends React.Component {
+export default class Mutation extends React.Component {
   static withUri = uri => props => <Mutation uri={uri} {...props} />;
 
   static contextTypes = contextTypes;
