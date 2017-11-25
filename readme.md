@@ -1,11 +1,13 @@
 # React Simple GraphQL
 
-Simple GraphQL client for React.
+Simple GraphQL, in-browser-client for React apps. Wraps apollo-fetch.
+
+Goal is to be usable with a minimal amount of setup, but still configurable enough to handle more complex use-cases.
 
 ```
 import Query from '@hipshot/react-simple-graphql/Query';
 
-<Query uri={uri} query={query} variables={variables}>
+<Query query={query} variables={variables}>
   {({ data }) => data && <pre>{JSON.stringify(data, null, 2)}</pre>}
 </Query>
 ```
@@ -38,7 +40,15 @@ const query = `
 Calling with the function-as-child pattern:
 
 ```
-<Query uri={uri} query={query} variables={variables} onData={fn} onError={fn}>
+<Query
+  uri={uri}
+  query={query}
+  variables={variables}
+  before={beforeMiddleware}
+  after={afterMiddleware}
+  onData={fn}
+  onError={fn}
+>
   {({ loading, data, errors }) => {
     //
   }}
@@ -52,6 +62,8 @@ Calling with render callbacks `render` and `renderLoading`.
   uri={uri}
   query={query}
   variables={variables}
+  before={beforeMiddleware}
+  after={afterMiddleware}
   onData={fn}
   onError={fn}
   renderLoading={ () => <Loading />}
@@ -77,7 +89,12 @@ mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
   }
 }`;
 
-<Mutation uri={uri} mutation={mutation} >
+<Mutation
+  uri={uri}
+  mutation={mutation}
+  before={beforeMiddleware}
+  after={afterMiddleware}
+>
   {({ mutation, data, errors }) =>
     errors ? (
       // mutation ran unsuccessfully,
@@ -108,12 +125,14 @@ mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
 
 ### `Provider` Component
 
-To make the `uri` prop optional on `<Query/>` and `<Mutation/>`, use  `<Provider/>`. Any `<Query/>` or `<Mutation/>` component that's a descendent of `<Provider/>` will receive the URI via context.
+To globally change the `uri`. `before`, and `after` of all `<Query/>` and `<Mutation/>`, a `<Provider/>` component can be added at the top of your UI tree.
+
+Any `<Query/>` or `<Mutation/>` component that's a descendent of `<Provider/>` will receive the `uri` prop, as well as any configured `before` and `after` middleware via context.
 
 ```
 import Provider from '@hipshot/react-simple-graphql/Provider';
 
-<Provider uri="https//example.org/graphql">
+<Provider uri="https//example.org/graphql" before={beforeMiddleware} after={afterMiddleware}>
   <div>
     <Query query={query} variables={variables}>
     {({data})=> (
@@ -126,6 +145,63 @@ import Provider from '@hipshot/react-simple-graphql/Provider';
 
 A `uri` prop on the `<Query/>` or `<Mutation/>` will always take precendence over the `uri` provided by `<Provider/>`.
 
+If `before` and `after` middleware exist in both the `<Provider />` and `<Query />` or `<Mutation />`, those middlewares are chained together with middleware added via `<Provider />` are ran first.
+
+## Middleware
+
+Both the request and the response can be decorated or acted upon immedately `before` or `after` making the request or receiving the response respectively. This is helpful for adjusting headers (before) or global-handling of particular responses.
+
+### `before`
+
+```
+const appendTokenMiddleware = ({ request, options }, next) => {
+  options.headers = {
+    ...options.headers,
+    "x-access-token": `1234`
+  };
+
+  next();
+};
+```
+
+This `before` middleware can now be attached to `<Provider />`, `<Query />`, or `<Mutation />` via the `before` prop.
+
+```
+<Query before={appendTokenMiddleware} query={query} />
+
+// or
+<Mutation before={appendTokenMiddleware} query={query} />
+
+// or
+<Provider before={appendTokenMiddleware}>
+  ...
+</Provider>
+// where all descendant `Query` or `Mutation` elements will use this middleware.
+```
+
+### `after`
+
+```
+const logStatus = ({ response }, next) => {
+  action("response status")(response.status);
+  next();
+};
+```
+
+This `after` middleware can now be attached to `<Provider />`, `<Query />`, or `<Mutation />` via the `after` prop.
+
+```
+<Query after={logStatus} query={query} />
+
+// or
+<Mutation after={logStatus} query={query} />
+
+// or
+<Provider after={logStatus}>
+  ...
+</Provider>
+// where all descendant `Query` or `Mutation` elements will use this middleware.
+```
 
 
 ## `withUri` HoC

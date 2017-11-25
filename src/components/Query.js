@@ -4,7 +4,9 @@ import PropTypes from "prop-types";
 import equals from "deep-equal";
 
 const contextTypes = {
-  uri: PropTypes.string
+  uri: PropTypes.string,
+  before: PropTypes.func,
+  after: PropTypes.func
 };
 
 const defaultProps = {
@@ -23,7 +25,25 @@ export default class Query extends React.Component {
 
   getUri() {
     // destructing context doesn't work /shrug
-    return this.props.uri || this.context.uri;
+    return this.props.uri || this.context.uri || "/graphql";
+  }
+
+  createClient(uri) {
+    const client = createApolloFetch({ uri });
+
+    if (this.context.before) {
+      client.use(this.context.before);
+    }
+    if (this.props.before) {
+      client.use(this.props.before);
+    }
+    if (this.context.after) {
+      client.useAfter(this.context.after);
+    }
+    if (this.props.after) {
+      client.useAfter(this.props.after);
+    }
+    return client;
   }
 
   componentDidMount() {
@@ -42,7 +62,7 @@ export default class Query extends React.Component {
 
   doFetch({ uri, query, variables }) {
     this.setState(state => ({ loading: true, data: null, errors: null }));
-    const apolloFetch = createApolloFetch({ uri });
+    const apolloFetch = this.createClient(uri);
 
     apolloFetch({ query, variables })
       .then(({ data, errors }) => {
