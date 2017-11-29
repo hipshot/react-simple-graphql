@@ -31,7 +31,6 @@ export default class Mutation extends React.Component {
     const client = createApolloFetch({ uri });
 
     if (this.context.before) {
-      console.log("yes");
       client.use(this.context.before);
     }
     if (this.props.before) {
